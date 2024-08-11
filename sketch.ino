@@ -1,6 +1,6 @@
 #include <TM1637.h>
 #include <Wire.h>
-
+TM1637 display(12, 13);
 int buttonPin = 26;
 int lastState = LOW;
 int counter = 0;
@@ -34,10 +34,16 @@ void loop() {
   }
  lastState = buttonState;
  if (counter < 10){
-  display(0, counter);
+  display.display(3, counter);
  }
- else if ( 10 =< counter <100){
-  display(2, counter / 10);
-  display(3, counter % 10);
+ else if ( 10 <=  counter < 100){
+  display.display(2, counter / 10);
+  display.display(3, counter % 10);
+ }
+ else if (100 <= counter < 1000){
+  display.display(1, counter / 100);
+  display.display(2, (counter / 10) % 10);
+  display.display(3, counter % 10);
  }
  }
+
