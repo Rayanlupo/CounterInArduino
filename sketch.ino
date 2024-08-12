@@ -6,29 +6,30 @@ int lastState = LOW;
 int counter = 0;
 int ledPin = 22;
 int buzzerPin = 19;
+int buttonState = LOW;
+unsigned long lastPressTime = 0; 
 void setup() {
   Serial.begin(115200);
   pinMode(buttonPin, INPUT_PULLUP);
   pinMode(ledPin, OUTPUT);
   pinMode(buzzerPin, OUTPUT);
   digitalWrite(ledPin, LOW);
-  display.init();
-  display.set(7);
+  
+    lastState = digitalRead(buttonPin);
 }
 
 void loop() {
   
-  int buttonState = digitalRead(buttonPin);
+  buttonState = digitalRead(buttonPin);
   if (buttonState == HIGH && lastState == LOW){
+  display.init();
+  display.set(7);
   counter += 1;
   Serial.print(counter);
   delay(50);
- 
-  }
-   if (buttonState == HIGH) {
     digitalWrite(ledPin, HIGH);     
     tone(buzzerPin, 262);         
-  } else {
+    delay(100);
     digitalWrite(ledPin, LOW);      
     noTone(buzzerPin);             
   }
@@ -45,5 +46,13 @@ void loop() {
   display.display(2, (counter / 10) % 10);
   display.display(3, counter % 10);
  }
+ if (millis()-lastPressTime > 60000){
+  clearDisplay();
+  digitalWrite(ledPin, LOW);  // Turn off LED
+  noTone(buzzerPin);      
  }
-
+ }
+ void clearDisplay() {
+  int8_t clearData[4] = { 0x7F, 0x7F, 0x7F, 0x7F }; 
+  display.display(clearData);
+}
